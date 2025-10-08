@@ -7,7 +7,7 @@ import { Pagination } from '../components/Pagination';
 import { mockAgents } from '../data/mockAgents';
 import type { Agent } from '../types/Agent';
 import { Sidebar, type SidebarKey } from '../components/Sidebar';
-import { X, Plus, CheckCircle, Archive } from 'lucide-react';
+import { X,  CheckCircle, Archive } from 'lucide-react';
 import logo from '../assets/16_02_44.png';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { CreateUserModal } from '../components/CreateUserModal';
@@ -105,9 +105,9 @@ export const AgentsPage = () => {
   });
 
   // Only deposits performed by distributors
-  const distributorDeposits = filteredTransactions.filter(
-    (t) => t.type === 'Depot' && t.userType === 'Distributeur'
-  );
+  // const distributorDeposits = filteredTransactions.filter(
+  //   (t) => t.type === 'Depot' && t.userType === 'Distributeur'
+  // );
 
   // Cancel page: filter by reference number
   const cancelList = mockTransactions.filter((t) =>

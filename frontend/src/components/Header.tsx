@@ -86,10 +86,10 @@ export const Header = ({ onMenuClick, logoSrc = '/logo.png', onEditProfile, onLo
   );
 };
 
-function computeInitials(name: string) {
-  if (!name) return 'U';
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  const first = parts[0]?.[0] ?? '';
-  const second = parts.length > 1 ? parts[1][0] : (parts[0]?.[1] ?? '');
-  return (first + second).toUpperCase();
-}
+// function computeInitials(name: string) {
+//   if (!name) return 'U';
+//   const parts = name.trim().split(/\s+/).filter(Boolean);
+//   const first = parts[0]?.[0] ?? '';
+//   const second = parts.length > 1 ? parts[1][0] : (parts[0]?.[1] ?? '');
+//   return (first + second).toUpperCase();
+// }
