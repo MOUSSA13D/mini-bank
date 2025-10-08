@@ -1,24 +1,23 @@
 import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const DB_NAME = process.env.DB_NAME || 'minibank';
-
-if (!MONGODB_URI) {
-  console.error('Missing MONGODB_URI in .env');
-  process.exit(1);
-}
+dotenv.config();
 
 let client;
+let db;
 
-export async function getDb() {
-  if (!client) client = new MongoClient(MONGODB_URI);
-  if (!client.topology || !client.topology.isConnected()) {
-    await client.connect();
-  }
-  return client.db(DB_NAME);
+export async function connectToDB() {
+  if (db) return db;
+  if (!process.env.MONGODB_URI) throw new Error('Missing MONGODB_URI');
+  
+  client = new MongoClient(process.env.MONGODB_URI);
+  await client.connect();
+  db = client.db(); // ou db = client.db('mini-bank') si tu veux un nom spécifique
+  console.log('✅ Connected to MongoDB');
+  return db;
 }
 
 export async function getCollection(name) {
-  const db = await getDb();
-  return db.collection(name);
+  const database = await connectToDB();
+  return database.collection(name);
 }
