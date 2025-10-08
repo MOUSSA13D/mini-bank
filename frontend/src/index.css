@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1677FF;
+  --color-success: #00D26A;
+}
+
+@layer base {
+  :root {
+    --primary: #1677FF;
+    --success: #00D26A;
+    --surface: #ffffff;
+    --bg: #f5f7fb;
+  }
+
+  html, body, #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg);
+    color: #0f172a; /* slate-900 */
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl shadow-md p-6;
+  }
+
+  .stats-grid {
+    @apply flex justify-center gap-6 mb-8 flex-wrap;
+  }
+
+  .search-input {
+    @apply w-full px-6 py-3 rounded-full bg-gray-300/80 text-gray-700 placeholder-gray-600 focus:outline-none focus:ring-2 text-center;
+  }
+
+  .table th {
+    @apply px-6 py-4 text-left text-sm font-semibold text-gray-700 bg-gray-50;
+  }
+
+  .table td {
+    @apply px-6 py-4 text-sm text-gray-900;
+  }
+
+  .btn-icon-primary {
+    @apply p-2 rounded-lg text-primary hover:bg-blue-50 transition;
+  }
+
+  .btn-icon-success {
+    @apply p-2 rounded-lg text-[var(--success)] hover:bg-green-50 transition;
+  }
+}
