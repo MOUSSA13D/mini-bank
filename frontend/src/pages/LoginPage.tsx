@@ -7,10 +7,14 @@ interface LoginPageProps {
 }
 
 export const LoginPage = ({ onLogin, allowedEmail }: LoginPageProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('moussa@gmail.com');
+  const [password, setPassword] = useState('123456');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Base URL de l'API: utilise VITE_API_BASE en priorité (ex: http://localhost:4000)
+  // sinon retombe sur le localhost en dev
+  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:4000';
 
   // Pré-remplir l'email si fourni
   useEffect(() => {
@@ -25,7 +29,8 @@ export const LoginPage = ({ onLogin, allowedEmail }: LoginPageProps) => {
     setLoading(true);
 
     try {
-      const res = await fetch('https://mini-bank-3.onrender.com/agents/login', {
+      // Correspond à la route backend: server/routes/auth.js -> router.post('/login', ...)
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -33,9 +38,9 @@ export const LoginPage = ({ onLogin, allowedEmail }: LoginPageProps) => {
 
       const data = await res.json();
 
-      if (res.ok && data.success) {
-        // Appel du parent avec email et nom
-        onLogin?.(data.email, data.name);
+      // Le backend renvoie: { _id, email, fullName, token }
+      if (res.ok && data.token) {
+        onLogin?.(data.email, data.fullName);
       } else {
         setError(data.message || 'Email ou mot de passe incorrect');
       }
@@ -56,7 +61,7 @@ export const LoginPage = ({ onLogin, allowedEmail }: LoginPageProps) => {
           <p className="text-gray-500 mt-1">Connexion Agent</p>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} noValidate className="space-y-4">
           {error && (
             <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
               {error}

@@ -78,8 +78,9 @@ export const AgentsPage = () => {
     usersTab === 'actifs' ? a.statut === 'Actif' : a.statut === 'Inactif'
   );
 
-  const actifsCount = agents.filter((a) => a.statut === 'Actif').length;
-  const archivesCount = agents.filter((a) => a.statut === 'Inactif').length;
+  // Counts reflecting current search filter
+  const actifsCount = searchFiltered.filter((a) => a.statut === 'Actif').length;
+  const archivesCount = searchFiltered.filter((a) => a.statut === 'Inactif').length;
 
   // Pagination for users: 5 per page
   const pageSize = 5;
@@ -285,6 +286,10 @@ export const AgentsPage = () => {
                     placeholder="Rechercher par Email, ID ou Numéro de compte..."
                   />
                 </div>
+                {/* Exact count of users shown given current filters */}
+                <div className="mb-3 text-sm text-gray-700">
+                  Total: <span className="font-medium">{filteredAgents.length}</span> utilisateur(s)
+                </div>
                 <div className="mb-2 text-sm text-gray-600">
                   {selectedIds.length > 0 ? `${selectedIds.length} sélectionné(s)` : 'Aucune sélection'}
                 </div>
@@ -440,6 +445,10 @@ export const AgentsPage = () => {
             statut: 'Actif',
           };
           setAgents((prev) => [newAgent, ...prev]);
+          // Ensure the new account is immediately visible in the user management section
+          setActive('Utilisateur');
+          setUsersTab('actifs');
+          setCurrentPage(1);
           setCreateOpen(false);
           setFlash('Compte créé avec succès');
           setTimeout(() => setFlash(null), 2000);

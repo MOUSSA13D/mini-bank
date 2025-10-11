@@ -46,6 +46,55 @@ router.get('/', async (req, res) => {
   }
 });
 
+// POST /agents/login - simple email/password authentication
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+    if (!email || !password) return res.status(400).json({ success: false, message: 'email and password are required' });
+
+    const col = await getCollection(COLLECTION);
+    const agent = await col.findOne({ email });
+    if (!agent || agent.password !== password) {
+      return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    // Normalize basic response
+    return res.json({
+      success: true,
+      message: 'Login successful',
+      email: agent.email,
+      name: agent.firstName && agent.lastName ? `${agent.firstName} ${agent.lastName}` : (agent.name || 'Agent'),
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// DEV ONLY: seed a demo user if not exists
+router.post('/seed-demo', async (req, res) => {
+  try {
+    if (process.env.NODE_ENV !== 'development') return res.status(404).json({ error: 'Not found' });
+    const col = await getCollection(COLLECTION);
+    const email = 'moussa@gmail.com';
+    const existing = await col.findOne({ email });
+    if (existing) return res.json({ ok: true, seeded: false });
+    await col.insertOne({
+      email,
+      password: '123456',
+      firstName: 'Moussa',
+      lastName: 'Demo',
+      agentCode: 'AGT-DEMO-001',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    return res.status(201).json({ ok: true, seeded: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.post('/', async (req, res) => {
   try {
     const payload = reviveExtendedJSON(req.body);
