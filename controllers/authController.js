@@ -44,9 +44,8 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Email et mot de passe sont requis' });
     }
 
-    const normalizedEmail = String(email).trim().toLowerCase();
 
-    const agent = await Agent.findOne({ email: normalizedEmail });
+    const agent = await Agent.findOne({ email });
     if (!agent) return res.status(401).json({ message: 'Agent non trouvé' });
 
     const isMatch = await agent.matchPassword(password);
