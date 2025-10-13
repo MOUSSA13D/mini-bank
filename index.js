@@ -27,5 +27,14 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/agents', require('./routes/agents'));
 app.use('/api/transactions', require('./routes/transactions'));
 
+// Health check route
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'Mini Bank Backend is running',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Serveur lancé sur le port ${PORT}`));

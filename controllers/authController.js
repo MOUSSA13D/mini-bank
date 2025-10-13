@@ -38,18 +38,28 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body || {};
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email et mot de passe sont requis' });
+    }
 
-  const agent = await Agent.findOne({ email });
-  if (!agent) return res.status(401).json({ message: 'Agent non trouvé' });
+    const normalizedEmail = String(email).trim().toLowerCase();
 
-  const isMatch = await agent.matchPassword(password);
-  if (!isMatch) return res.status(401).json({ message: 'Mot de passe incorrect' });
+    const agent = await Agent.findOne({ email: normalizedEmail });
+    if (!agent) return res.status(401).json({ message: 'Agent non trouvé' });
 
-  res.json({
-    _id: agent._id,
-    email: agent.email,
-    fullName: `${agent.firstName} ${agent.lastName}`,
-    token: generateToken(agent._id),
-  });
+    const isMatch = await agent.matchPassword(password);
+    if (!isMatch) return res.status(401).json({ message: 'Mot de passe incorrect' });
+
+    return res.json({
+      _id: agent._id,
+      email: agent.email,
+      fullName: `${agent.firstName} ${agent.lastName}`,
+      token: generateToken(agent._id),
+    });
+  } catch (err) {
+    console.error('Erreur login:', err);
+    return res.status(500).json({ message: 'Erreur serveur' });
+  }
 };
