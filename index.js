@@ -7,11 +7,16 @@ const app = express();
 connectDB();
 
 // CORS configuration: allow local dev and deployed frontends
+const extraOrigins = (process.env.FRONTEND_ORIGIN || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+
 const corsOptions = {
   origin: [
     'http://localhost:5173',
-    process.env.FRONTEND_ORIGIN || ''
-  ].filter(Boolean),
+    ...extraOrigins,
+  ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
