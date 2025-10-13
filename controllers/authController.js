@@ -46,8 +46,15 @@ exports.login = async (req, res) => {
 
     const normalizedEmail = String(email).trim().toLowerCase();
 
-    const agent = await Agent.findOne({ email: normalizedEmail });
+    // S'assurer de récupérer le hash du mot de passe
+    const agent = await Agent.findOne({ email: normalizedEmail }).select('+password');
     if (!agent) return res.status(401).json({ message: 'Agent non trouvé' });
+
+    // Compte sans mot de passe enregistré (créé manuellement ou corrompu)
+    if (!agent.password) {
+      console.warn('Login refusé: mot de passe absent pour', normalizedEmail);
+      return res.status(401).json({ message: 'Compte invalide: mot de passe manquant. Veuillez réinitialiser ou recréer le compte.' });
+    }
 
     const isMatch = await agent.matchPassword(password);
     if (!isMatch) return res.status(401).json({ message: 'Mot de passe incorrect' });
