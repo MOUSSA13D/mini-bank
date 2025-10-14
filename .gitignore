@@ -2,11 +2,7 @@
 node_modules/
 server/node_modules/
 
-# Env files
-.env
-server/.env
-.env.local
-.env.*.local
+
 
 # Logs
 logs/
