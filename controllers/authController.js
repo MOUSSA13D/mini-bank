@@ -1,7 +1,12 @@
 const Agent = require('../models/Agent');
 const jwt = require('jsonwebtoken');
 const generateToken = (agentId) => {
-  return jwt.sign({ id: agentId }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    // Throw a clear error so callers/logs show the root cause instead of a generic 500
+    throw new Error('JWT_SECRET not defined in environment');
+  }
+  return jwt.sign({ id: agentId }, secret, { expiresIn: '1d' });
 };
 
 // Register a new agent (signup)
@@ -33,6 +38,10 @@ exports.register = async (req, res) => {
       return res.status(409).json({ message: 'Conflit: valeur unique déjà existante', details: error.keyValue });
     }
     console.error('Erreur inscription:', error);
+    // Environnement de développement : renvoyer le détail pour le debug
+    if (process.env.NODE_ENV !== 'production') {
+      return res.status(500).json({ message: 'Erreur serveur', detail: error.message });
+    }
     return res.status(500).json({ message: 'Erreur serveur' });
   }
 };
@@ -60,7 +69,10 @@ exports.login = async (req, res) => {
       token: generateToken(agent._id),
     });
   } catch (err) {
-    console.error('Erreur login:', err);
-    return res.status(500).json({ message: 'Erreur serveur' });
+      console.error('Erreur login:', err);
+      if (process.env.NODE_ENV !== 'production') {
+        return res.status(500).json({ message: 'Erreur serveur', detail: err.message });
+      }
+      return res.status(500).json({ message: 'Erreur serveur' });
   }
 };
