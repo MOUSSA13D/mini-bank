@@ -3,12 +3,10 @@ const cors = require('cors');
 const connectDB = require('./db');
 require('dotenv').config();
 
-// Deployment fix for Render – no functional change
-// bonjour 
-
-
 const app = express();
 connectDB();
+
+// bien
 
 // ------------------ CORS CONFIGURATION ------------------
 const extraOrigins = (process.env.FRONTEND_ORIGIN || 'https://mini-bank7-6v88.vercel.app')
@@ -28,7 +26,9 @@ const corsOptions = {
 
 // Appliquer CORS
 app.use(cors(corsOptions));
-app.options('*', corsOptions);
+
+// Correctif pour app.options()
+app.options('*', (req, res, next) => cors(corsOptions)(req, res, next));
 
 // Log allowed origins pour debug
 console.log('CORS allowed origins:', corsOptions.origin);
@@ -51,7 +51,7 @@ app.use((req, res, next) => {
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
 });
-// ------------------ END CORS CONFIG fgfddddd ------------------
+// ------------------ END CORS CONFIG ------------------
 
 // Parse JSON
 app.use(express.json());
